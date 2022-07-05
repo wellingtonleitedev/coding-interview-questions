@@ -23,7 +23,6 @@ function quickSort(array) {
     quickSort(array);
   }
 
-  console.log({ array });
   return array;
 }
 
