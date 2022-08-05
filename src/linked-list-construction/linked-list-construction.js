@@ -38,108 +38,52 @@ class DoublyLinkedList {
   }
 
   setHead(node) {
-    const next = this.head;
-    if (node.next) node.next.prev = node.prev;
-    if (node.prev) node.prev.next = node.next;
-    this.head.prev = node;
-    this.head = node;
-    this.head.prev = null;
-    this.head.next = next;
+    this.insertBefore(this.head, node);
   }
 
   setTail(node) {
-    const prev = this.tail;
-
-    if (node.prev) node.prev.next = node.next;
-    if (node.next) node.next.prev = node.prev;
-    this.tail.next = node;
-    this.tail = node;
-    this.tail.next = null;
-    this.tail.prev = prev;
+    this.insertAfter(this.tail, node);
   }
 
   insertBefore(node, nodeToInsert) {
-    let currentNodeFromHead = this.head;
-    let currentNodeFromTail = this.tail;
+    this.remove(nodeToInsert);
 
-    while (currentNodeFromHead != currentNodeFromTail) {
-      if (node === this.head) this.head = nodeToInsert;
+    if (node === this.head) this.head = nodeToInsert;
 
-      if (currentNodeFromHead === node) {
-        nodeToInsert.prev.next = nodeToInsert.next;
-        nodeToInsert.next.prev = nodeToInsert.prev;
+    if (!node) return;
 
-        nodeToInsert.prev = currentNodeFromHead.prev;
-        nodeToInsert.next = currentNodeFromHead;
-        currentNodeFromHead.prev.next = nodeToInsert;
-        currentNodeFromHead.prev = nodeToInsert;
-
-        break;
-      }
-
-      if (currentNodeFromTail === node) {
-        nodeToInsert.prev.next = nodeToInsert.next;
-        nodeToInsert.next.prev = nodeToInsert.prev;
-
-        nodeToInsert.prev = currentNodeFromTail.prev;
-        nodeToInsert.next = currentNodeFromTail;
-        currentNodeFromTail.prev.next = nodeToInsert;
-        currentNodeFromTail.prev = nodeToInsert;
-
-        break;
-      }
-
-      currentNodeFromHead = currentNodeFromHead.next;
-      currentNodeFromTail = currentNodeFromTail.prev;
-    }
+    nodeToInsert.prev = node.prev;
+    nodeToInsert.next = node;
+    if (node.prev) node.prev.next = nodeToInsert;
+    node.prev = nodeToInsert;
   }
 
   insertAfter(node, nodeToInsert) {
-    let currentNodeFromHead = this.head;
-    let currentNodeFromTail = this.tail;
+    this.remove(nodeToInsert);
 
-    while (currentNodeFromHead != currentNodeFromTail) {
-      if (currentNodeFromHead === node) {
-        if (nodeToInsert.prev) nodeToInsert.prev.next = nodeToInsert.next;
-        if (nodeToInsert.next) nodeToInsert.next.prev = nodeToInsert.prev;
+    if (node === this.tail) this.tail = nodeToInsert;
 
-        nodeToInsert.prev = currentNodeFromHead;
-        nodeToInsert.next = currentNodeFromHead.next;
-        if (currentNodeFromHead.next)
-          currentNodeFromHead.next.prev = nodeToInsert;
-        currentNodeFromHead.next = nodeToInsert;
+    if (!node) return;
 
-        break;
-      }
-
-      if (currentNodeFromTail === node) {
-        if (node === this.tail) this.tail = nodeToInsert;
-
-        if (nodeToInsert.prev) nodeToInsert.prev.next = nodeToInsert.next;
-        if (nodeToInsert.next) nodeToInsert.next.prev = nodeToInsert.prev;
-
-        nodeToInsert.prev = currentNodeFromTail;
-        nodeToInsert.next = currentNodeFromTail.next;
-        if (currentNodeFromTail.next)
-          currentNodeFromTail.next.prev = nodeToInsert;
-        currentNodeFromTail.next = nodeToInsert;
-
-        break;
-      }
-
-      currentNodeFromHead = currentNodeFromHead.next;
-      currentNodeFromTail = currentNodeFromTail.prev;
-    }
+    nodeToInsert.prev = node;
+    nodeToInsert.next = node.next;
+    if (node.next) node.next.prev = nodeToInsert;
+    node.next = nodeToInsert;
   }
 
   insertAtPosition(position, nodeToInsert) {
     let currentNode = this.head;
+    let currentPosition = 1;
 
     while (currentNode) {
-      if (currentNode.value === value) {
+      if (currentPosition === position) {
+        this.insertBefore(currentNode, nodeToInsert);
+
+        break;
       }
 
       currentNode = currentNode.next;
+      currentPosition += 1;
     }
   }
 
@@ -148,12 +92,7 @@ class DoublyLinkedList {
 
     while (currentNode) {
       if (currentNode.value === value) {
-        if (currentNode === this.head) this.head = currentNode.next;
-        if (currentNode === this.tail) this.tail = currentNode.prev;
-
-        if (currentNode.prev) currentNode.prev.next = currentNode.next;
-
-        if (currentNode.next) currentNode.next.prev = currentNode.prev;
+        this.remove(currentNode);
       }
 
       currentNode = currentNode.next;
@@ -161,40 +100,38 @@ class DoublyLinkedList {
   }
 
   remove(node) {
-    let currentNodeFromHead = this.head;
-    let currentNodeFromTail = this.tail;
+    this.setHeadOrTail(node);
 
-    while (currentNodeFromHead != currentNodeFromTail) {
-      if (currentNodeFromHead === node) {
-        currentNodeFromHead.prev.next = currentNodeFromHead.next;
-        currentNodeFromHead.next.prev = currentNodeFromHead.prev;
-        break;
-      }
+    if (node.next) node.next.prev = node.prev;
+    if (node.prev) node.prev.next = node.next;
 
-      if (currentNodeFromTail === node) {
-        currentNodeFromTail.prev.next = currentNodeFromTail.next;
-        currentNodeFromTail.next.prev = currentNodeFromTail.prev;
-        break;
-      }
-
-      currentNodeFromHead = currentNodeFromHead.next;
-      currentNodeFromTail = currentNodeFromTail.prev;
-    }
+    // node.prev = null;
+    // node.next = null;
   }
 
   containsNodeWithValue(value) {
     let currentNode = this.head;
-    let isValueExist = false;
 
-    while (currentNode) {
-      if (currentNode.value === value) {
-        isValueExist = true;
-      }
-
+    while (currentNode && currentNode.value !== value) {
       currentNode = currentNode.next;
     }
 
-    return isValueExist;
+    return !!currentNode;
+  }
+
+  setHeadOrTail(node) {
+    if (this.head === node) {
+      this.head = node.next;
+    }
+
+    if (this.tail === node) {
+      this.tail = node.prev;
+    }
+
+    if (!this.head && !this.tail) {
+      this.head = node;
+      this.tail = node;
+    }
   }
 }
 
@@ -231,10 +168,12 @@ doublyLinkedList.getWholeListFromTail();
 doublyLinkedList.setHead(four);
 doublyLinkedList.setTail(six);
 doublyLinkedList.insertBefore(six, three);
-doublyLinkedList.insertAfter(six, three3);
+doublyLinkedList.insertAfter(six, three2);
+doublyLinkedList.insertAtPosition(1, three3);
 doublyLinkedList.removeNodesWithValue(3);
 doublyLinkedList.remove(two);
 doublyLinkedList.containsNodeWithValue(5);
+doublyLinkedList.containsNodeWithValue(8);
 
 doublyLinkedList.getWholeListFromHead();
 doublyLinkedList.getWholeListFromTail();

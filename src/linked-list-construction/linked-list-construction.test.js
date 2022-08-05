@@ -68,9 +68,9 @@ it("Test Case #1", function () {
   expect(getNodeValuesHeadToTail(linkedList)).toEqual([4, 1, 2, 5, 3, 6, 3]);
   expect(getNodeValuesTailToHead(linkedList)).toEqual([3, 6, 3, 5, 2, 1, 4]);
 
-  // linkedList.insertAtPosition(1, three3);
-  // expect(getNodeValuesHeadToTail(linkedList)).toEqual([3, 4, 1, 2, 5, 3, 6, 3]);
-  // expect(getNodeValuesTailToHead(linkedList)).toEqual([3, 6, 3, 5, 2, 1, 4, 3]);
+  linkedList.insertAtPosition(1, three3);
+  expect(getNodeValuesHeadToTail(linkedList)).toEqual([3, 4, 1, 2, 5, 3, 6, 3]);
+  expect(getNodeValuesTailToHead(linkedList)).toEqual([3, 6, 3, 5, 2, 1, 4, 3]);
 
   linkedList.removeNodesWithValue(3);
   expect(getNodeValuesHeadToTail(linkedList)).toEqual([4, 1, 2, 5, 6]);
